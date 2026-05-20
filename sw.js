@@ -1,9 +1,9 @@
-const CACHE_NAME = 'finanzaspro-v1.0.0';
+const CACHE_NAME = 'finanzaspro-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/app.js',
-  '/manifest.json',
+  './',
+  './index.html',
+  './app.js',
+  './manifest.json',
   'https://code.highcharts.com/highcharts.js',
   'https://code.highcharts.com/modules/exporting.js',
   'https://code.highcharts.com/modules/accessibility.js'
@@ -12,8 +12,12 @@ const urlsToCache = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(cache => {
+        console.log('Cache abierto');
+        return cache.addAll(urlsToCache);
+      })
   );
+  self.skipWaiting();
 });
 
 self.addEventListener('fetch', event => {
@@ -50,4 +54,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.clients.claim();
 });

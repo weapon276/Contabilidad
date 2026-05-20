@@ -1,3 +1,38 @@
+// Variables para instalación
+let deferredPrompt;
+let installBanner = document.getElementById('installBanner');
+
+// Detectar si se puede instalar
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBanner) {
+    installBanner.style.display = 'block';
+  }
+});
+
+// Botón de instalación
+const installBtn = document.getElementById('installBtn');
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('App instalada');
+        if (installBanner) installBanner.style.display = 'none';
+      }
+      deferredPrompt = null;
+    }
+  });
+}
+
+// Verificar si ya está instalada
+window.addEventListener('appinstalled', () => {
+  console.log('App instalada exitosamente');
+  if (installBanner) installBanner.style.display = 'none';
+});
+
 // Inicialización de datos
 let finanzasData = {
     ingresos: [],
@@ -220,7 +255,6 @@ function checkBudgetRules() {
 
 // Generar gráficas
 function generateCharts() {
-    // Gráfica de distribución de gastos por categoría
     const gastosPorCategoria = {
         fijo: 0,
         variable: 0,
@@ -251,7 +285,6 @@ function generateCharts() {
         });
     }
     
-    // Gráfica de evolución mensual
     const gastosPorMes = {};
     const ingresosPorMes = {};
     
@@ -408,7 +441,13 @@ loadData();
 
 // Registrar Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registrado', reg))
-        .catch(err => console.error('Error al registrar SW:', err));
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registrado exitosamente:', registration);
+            })
+            .catch(error => {
+                console.log('Error al registrar ServiceWorker:', error);
+            });
+    });
 }

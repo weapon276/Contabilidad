@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#2C3E50">
-    <title>FinanzasPro - Control Financiero Inteligente</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FinanzasPro">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
+    <title>FinanzasPro - Control Financiero</title>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
@@ -24,7 +27,6 @@
             padding-bottom: 80px;
         }
 
-        /* Header */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -40,10 +42,10 @@
             font-size: 1.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-fill-color: transparent;
+            background-clip: text;
         }
 
-        /* Navegación */
         .nav-tabs {
             display: flex;
             background: white;
@@ -71,7 +73,6 @@
             color: white;
         }
 
-        /* Contenido */
         .tab-content {
             display: none;
             padding: 20px;
@@ -87,7 +88,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Tarjetas */
         .card {
             background: white;
             border-radius: 15px;
@@ -103,7 +103,6 @@
             padding-left: 10px;
         }
 
-        /* Formularios */
         .form-group {
             margin-bottom: 15px;
         }
@@ -145,7 +144,6 @@
             transform: translateY(-2px);
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -178,7 +176,6 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Lista de registros */
         .records-list {
             max-height: 400px;
             overflow-y: auto;
@@ -192,7 +189,6 @@
             border-left: 4px solid #667eea;
         }
 
-        /* Consejos */
         .advice-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -201,20 +197,17 @@
             margin-bottom: 20px;
         }
 
-        /* Gráficos */
         .chart-container {
             height: 300px;
             margin: 20px 0;
         }
 
-        /* Grid */
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -225,9 +218,35 @@
                 padding: 8px;
             }
         }
+
+        #installBanner {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #2C3E50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        #installBtn {
+            background: #667eea;
+            margin-top: 10px;
+            padding: 10px 20px;
+        }
     </style>
 </head>
 <body>
+    <div id="installBanner">
+        <p>📱 Instala FinanzasPro para usarla sin internet</p>
+        <button id="installBtn">Instalar App</button>
+    </div>
+
     <div class="header">
         <h1>💰 FinanzasPro</h1>
         <p>Control financiero inteligente</p>
@@ -241,7 +260,6 @@
         <button class="tab-btn" onclick="showTab('consejos')">💡 Consejos</button>
     </div>
 
-    <!-- Dashboard -->
     <div id="dashboard" class="tab-content active">
         <div class="advice-card" id="dashboardAdvice">
             <h3>🎯 Consejo Financiero del Día</h3>
@@ -265,7 +283,6 @@
         </div>
     </div>
 
-    <!-- Ingresos -->
     <div id="ingresos" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Ingreso</h3>
@@ -305,7 +322,6 @@
         </div>
     </div>
 
-    <!-- Egresos -->
     <div id="egresos" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Gasto</h3>
@@ -341,7 +357,6 @@
         </div>
     </div>
 
-    <!-- Metas -->
     <div id="metas" class="tab-content">
         <div class="card">
             <h3>🎯 Planificador de Metas</h3>
@@ -374,20 +389,19 @@
         </div>
     </div>
 
-    <!-- Consejos -->
     <div id="consejos" class="tab-content">
         <div class="card">
             <h3>📖 Regla Financiera 50/30/20</h3>
             <div class="grid-2">
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px;">
+                <div style="background:#e3f2fd; padding:15px; border-radius:10px;">
                     <h4>💰 50% - Necesidades</h4>
                     <p>Gastos básicos: Renta, servicios, alimentación, transporte</p>
                 </div>
-                <div style="background: #fff3e0; padding: 15px; border-radius: 10px;">
+                <div style="background:#fff3e0; padding:15px; border-radius:10px;">
                     <h4>🎮 30% - Deseos Personales</h4>
                     <p>Entretenimiento, restaurantes, compras no esenciales</p>
                 </div>
-                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px;">
+                <div style="background:#e8f5e9; padding:15px; border-radius:10px;">
                     <h4>📈 20% - Inversión/Ahorro</h4>
                     <p>Fondo de emergencia, inversiones, retiro</p>
                 </div>

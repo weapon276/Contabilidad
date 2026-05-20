@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2C3E50">
+    <title>FinanzasPro - Control Financiero Inteligente</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Navegación */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            padding: 10px;
+            gap: 10px;
+            overflow-x: auto;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Contenido */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tarjetas */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #2C3E50;
+            border-left: 4px solid #667eea;
+            padding-left: 10px;
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Lista de registros */
+        .records-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Consejos */
+        .advice-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Gráficos */
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-btn {
+                font-size: 12px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 FinanzasPro</h1>
+        <p>Control financiero inteligente</p>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+        <button class="tab-btn" onclick="showTab('ingresos')">💵 Ingresos</button>
+        <button class="tab-btn" onclick="showTab('egresos')">💸 Egresos</button>
+        <button class="tab-btn" onclick="showTab('metas')">🎯 Metas</button>
+        <button class="tab-btn" onclick="showTab('consejos')">💡 Consejos</button>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="tab-content active">
+        <div class="advice-card" id="dashboardAdvice">
+            <h3>🎯 Consejo Financiero del Día</h3>
+            <p id="dailyAdvice">Aplicando la regla 50/30/20</p>
+        </div>
+        
+        <div class="card">
+            <h3>📈 Resumen Financiero</h3>
+            <div id="summaryStats"></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>💰 Distribución de Gastos</h3>
+                <div id="expensesChart" class="chart-container"></div>
+            </div>
+            <div class="card">
+                <h3>📊 Evolución Mensual</h3>
+                <div id="trendsChart" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingresos -->
+    <div id="ingresos" class="tab-content">
+        <div class="card">
+            <h3>➕ Registrar Ingreso</h3>
+            <form id="incomeForm">
+                <div class="form-group">
+                    <label>📅 Fecha</label>
+                    <input type="date" id="incomeDate" required>
+                </div>
+                <div class="form-group">
+                    <label>📝 Tipo de Ingreso</label>
+                    <select id="incomeType" required>
+                        <option value="nomina">Nómina</option>
+                        <option value="bonos">Bonos/Aguinaldo</option>
+                        <option value="extra">Horas Extra</option>
+                        <option value="otros">Otros Ingresos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>💰 Monto Bruto</label>
+                    <input type="number" id="grossAmount" step="0.01" required>
+                </div>
+                <div class="form-group" id="deductionsGroup">
+                    <label>📉 Retenciones (ISPT + IMSS)</label>
+                    <input type="number" id="deductions" step="0.01" value="0">
+                </div>
+                <div class="form-group">
+                    <label>💵 Monto Neto</label>
+                    <input type="number" id="netAmount" step="0.01" readonly>
+                </div>
+                <button type="submit">✅ Registrar Ingreso</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📜 Historial de Ingresos</h3>
+            <div id="incomeList" class="records-list"></div>
+        </div>
+    </div>
+
+    <!-- Egresos -->
+    <div id="egresos" class="tab-content">
+        <div class="card">
+            <h3>➕ Registrar Gasto</h3>
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label>📅 Fecha</label>
+                    <input type="date" id="expenseDate" required>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Categoría</label>
+                    <select id="expenseCategory" required>
+                        <option value="fijo">Gastos Fijos (Renta, servicios)</option>
+                        <option value="variable">Gastos Variables (Supermercado, transporte)</option>
+                        <option value="deduccion">Deducciones Personales (Médicos, colegiaturas)</option>
+                        <option value="deuda">Deudas (Tarjetas, préstamos)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📝 Descripción</label>
+                    <input type="text" id="expenseDesc" required>
+                </div>
+                <div class="form-group">
+                    <label>💰 Monto</label>
+                    <input type="number" id="expenseAmount" step="0.01" required>
+                </div>
+                <button type="submit">✅ Registrar Gasto</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📜 Historial de Gastos</h3>
+            <div id="expenseList" class="records-list"></div>
+        </div>
+    </div>
+
+    <!-- Metas -->
+    <div id="metas" class="tab-content">
+        <div class="card">
+            <h3>🎯 Planificador de Metas</h3>
+            <form id="goalForm">
+                <div class="form-group">
+                    <label>🏠 ¿Qué quieres lograr?</label>
+                    <input type="text" id="goalName" placeholder="Ej: Comprar una casa, Terreno, Auto..." required>
+                </div>
+                <div class="form-group">
+                    <label>💰 Costo total del objetivo</label>
+                    <input type="number" id="goalCost" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>⏱️ Plazo (años)</label>
+                    <input type="number" id="goalYears" step="0.5" min="1" max="30" required>
+                </div>
+                <div class="form-group">
+                    <label>💵 Ahorro mensual disponible ($)</label>
+                    <input type="number" id="monthlySavings" step="0.01" required>
+                </div>
+                <button type="submit">📊 Generar Plan</button>
+            </form>
+        </div>
+
+        <div id="goalResult" class="card" style="display: none;"></div>
+        
+        <div class="card">
+            <h3>💪 Mis Metas Activas</h3>
+            <div id="activeGoals"></div>
+        </div>
+    </div>
+
+    <!-- Consejos -->
+    <div id="consejos" class="tab-content">
+        <div class="card">
+            <h3>📖 Regla Financiera 50/30/20</h3>
+            <div class="grid-2">
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px;">
+                    <h4>💰 50% - Necesidades</h4>
+                    <p>Gastos básicos: Renta, servicios, alimentación, transporte</p>
+                </div>
+                <div style="background: #fff3e0; padding: 15px; border-radius: 10px;">
+                    <h4>🎮 30% - Deseos Personales</h4>
+                    <p>Entretenimiento, restaurantes, compras no esenciales</p>
+                </div>
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px;">
+                    <h4>📈 20% - Inversión/Ahorro</h4>
+                    <p>Fondo de emergencia, inversiones, retiro</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔍 Análisis de tus hábitos</h3>
+            <div id="habitAnalysis"></div>
+        </div>
+
+        <div class="card">
+            <h3>💡 Consejos para reducir gastos hormiga</h3>
+            <ul id="tipsList">
+                <li>📱 Revisa suscripciones que no usas</li>
+                <li>☕ Reduce café/comidas fuera</li>
+                <li>🚗 Compara precios antes de comprar</li>
+                <li>💡 Apaga luces y desconecta aparatos</li>
+                <li>📦 Compra al mayoreo productos no perecederos</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -42,7 +42,7 @@
             font-size: 1.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
-            -webkit-background-fill-color: transparent;
+            -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
@@ -50,22 +50,23 @@
             display: flex;
             background: white;
             padding: 10px;
-            gap: 10px;
+            gap: 5px;
             overflow-x: auto;
             border-bottom: 2px solid #e0e0e0;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 10px 8px;
             border: none;
             background: transparent;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             border-radius: 10px;
             transition: all 0.3s;
             color: #666;
+            white-space: nowrap;
         }
 
         .tab-btn.active {
@@ -208,14 +209,47 @@
             gap: 20px;
         }
 
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .investment-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .emergency-fund {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #4CAF50;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-success { background: #4CAF50; color: white; }
+        .badge-warning { background: #FF9800; color: white; }
+        .badge-info { background: #2196F3; color: white; }
+
         @media (max-width: 768px) {
-            .grid-2 {
+            .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
             }
             
             .tab-btn {
-                font-size: 12px;
-                padding: 8px;
+                font-size: 10px;
+                padding: 6px 4px;
             }
         }
 
@@ -239,6 +273,34 @@
             margin-top: 10px;
             padding: 10px 20px;
         }
+
+        .conditional-field {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 8px;
+        }
+
+        .conditional-field.show {
+            display: block;
+        }
+
+        .profit-badge {
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .loss-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
     </style>
 </head>
 <body>
@@ -253,13 +315,15 @@
     </div>
 
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
-        <button class="tab-btn" onclick="showTab('ingresos')">💵 Ingresos</button>
-        <button class="tab-btn" onclick="showTab('egresos')">💸 Egresos</button>
-        <button class="tab-btn" onclick="showTab('metas')">🎯 Metas</button>
-        <button class="tab-btn" onclick="showTab('consejos')">💡 Consejos</button>
+        <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+        <button class="tab-btn" data-tab="ingresos">💵 Ingresos</button>
+        <button class="tab-btn" data-tab="egresos">💸 Egresos</button>
+        <button class="tab-btn" data-tab="inversiones">📈 Inversiones</button>
+        <button class="tab-btn" data-tab="metas">🎯 Metas</button>
+        <button class="tab-btn" data-tab="consejos">💡 Consejos</button>
     </div>
 
+    <!-- ==================== DASHBOARD ==================== -->
     <div id="dashboard" class="tab-content active">
         <div class="advice-card" id="dashboardAdvice">
             <h3>🎯 Consejo Financiero del Día</h3>
@@ -269,6 +333,12 @@
         <div class="card">
             <h3>📈 Resumen Financiero</h3>
             <div id="summaryStats"></div>
+        </div>
+
+        <!-- Fondo de Emergencia -->
+        <div class="card" id="emergencyFundCard">
+            <h3>🛡️ Fondo de Emergencia</h3>
+            <div id="emergencyFundDisplay"></div>
         </div>
 
         <div class="grid-2">
@@ -281,8 +351,14 @@
                 <div id="trendsChart" class="chart-container"></div>
             </div>
         </div>
+
+        <div class="card">
+            <h3>📈 Distribución de Inversiones</h3>
+            <div id="investmentsChart" class="chart-container"></div>
+        </div>
     </div>
 
+    <!-- ==================== INGRESOS ==================== -->
     <div id="ingresos" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Ingreso</h3>
@@ -322,6 +398,7 @@
         </div>
     </div>
 
+    <!-- ==================== EGRESOS ==================== -->
     <div id="egresos" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Gasto</h3>
@@ -357,6 +434,112 @@
         </div>
     </div>
 
+    <!-- ==================== INVERSIONES ==================== -->
+    <div id="inversiones" class="tab-content">
+        <div class="card">
+            <h3>➕ Registrar Inversión</h3>
+            <form id="investmentForm">
+                <div class="form-group">
+                    <label>📅 Fecha de Inversión</label>
+                    <input type="date" id="investmentDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🏦 Tipo de Inversión</label>
+                    <select id="investmentType" required>
+                        <option value="nu">Nu (Cuenta de ahorro)</option>
+                        <option value="gbm">GBM+ (Acciones)</option>
+                        <option value="cetes">CETES</option>
+                        <option value="didi">Didi (Préstamos)</option>
+                        <option value="fibras">FIBRAS</option>
+                        <option value="cripto">Criptomonedas</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Nombre/Descripción</label>
+                    <input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple, CETES - Bono 2025" required>
+                </div>
+
+                <!-- Campos específicos para Nu/CETES/Didi -->
+                <div id="fixedIncomeFields" class="conditional-field">
+                    <h4>📊 Datos de Renta Fija</h4>
+                    <div class="form-group">
+                        <label>📈 Tasa de Interés Anual (%)</label>
+                        <input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5">
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Plazo (meses)</label>
+                        <input type="number" id="investmentTerm" placeholder="Ej: 12">
+                    </div>
+                </div>
+
+                <!-- Campos específicos para GBM -->
+                <div id="stockFields" class="conditional-field">
+                    <h4>📊 Datos de Acciones</h4>
+                    <div class="form-group">
+                        <label>🏷️ Ticker de la Acción</label>
+                        <input type="text" id="stockTicker" placeholder="Ej: AAPL, AMZN, NFLX">
+                    </div>
+                    <div class="form-group">
+                        <label>📈 Tipo de Acción</label>
+                        <select id="stockType">
+                            <option value="nacional">Nacional (BMV)</option>
+                            <option value="internacional">Internacional (NYSE/NASDAQ)</option>
+                            <option value="etf">ETF</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>💵 Precio de Compra (por acción)</label>
+                        <input type="number" id="buyPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📦 Número de Acciones</label>
+                        <input type="number" id="sharesCount" step="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Precio Actual (opcional, para rendimiento)</label>
+                        <input type="number" id="currentPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>💵 Genera Dividendos</label>
+                        <select id="generatesDividends">
+                            <option value="no">No</option>
+                            <option value="si">Sí</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📈 Rendimiento por Dividendo (%)</label>
+                        <input type="number" id="dividendYield" step="0.01" placeholder="Ej: 3.5">
+                    </div>
+                </div>
+
+                <!-- Campos comunes -->
+                <div class="form-group">
+                    <label>💰 Monto Invertido ($)</label>
+                    <input type="number" id="investedAmount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>📝 Notas adicionales</label>
+                    <textarea id="investmentNotes" rows="2" placeholder="Comentarios sobre esta inversión..."></textarea>
+                </div>
+                <button type="submit">✅ Registrar Inversión</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📊 Resumen de Inversiones</h3>
+            <div id="investmentSummary"></div>
+        </div>
+
+        <div class="card">
+            <h3>📜 Historial de Inversiones</h3>
+            <div id="investmentList" class="records-list"></div>
+        </div>
+    </div>
+
+    <!-- ==================== METAS ==================== -->
     <div id="metas" class="tab-content">
         <div class="card">
             <h3>🎯 Planificador de Metas</h3>
@@ -389,6 +572,7 @@
         </div>
     </div>
 
+    <!-- ==================== CONSEJOS ==================== -->
     <div id="consejos" class="tab-content">
         <div class="card">
             <h3>📖 Regla Financiera 50/30/20</h3>
@@ -409,6 +593,11 @@
         </div>
 
         <div class="card">
+            <h3>🛡️ Fondo de Emergencia</h3>
+            <div id="emergencyAdvice"></div>
+        </div>
+
+        <div class="card">
             <h3>🔍 Análisis de tus hábitos</h3>
             <div id="habitAnalysis"></div>
         </div>
@@ -423,10 +612,22 @@
                 <li>📦 Compra al mayoreo productos no perecederos</li>
             </ul>
         </div>
+
+        <div class="card">
+            <h3>📚 Estrategias de Inversión Recomendadas</h3>
+            <div id="investmentStrategies">
+                <p><strong>🔹 Principiante:</strong> CETES + Nu (70% renta fija, 30% renta variable)</p>
+                <p><strong>🔹 Intermedio:</strong> FIBRAS + ETFs + CETES (50% renta fija, 50% renta variable)</p>
+                <p><strong>🔹 Avanzado:</strong> GBM + FIBRAS + Cripto (30% renta fija, 70% renta variable)</p>
+            </div>
+        </div>
     </div>
-   <p style="margin-top: 20px; font-size: 11px; opacity: 0.7;">
-                FinanzasPro © 2025 - Hecho con ❤️ por weapon276
-            </p>
+
+    <footer style="text-align: center; padding: 20px; background: rgba(255,255,255,0.9); margin-top: 30px;">
+        <p>✨ Creado por <strong>weapon276</strong> | 📱 ¿Necesitas una web para tu negocio?</p>
+        <p style="font-size: 11px; opacity: 0.7;">FinanzasPro © 2025 - Hecho con ❤️ por weapon276</p>
+    </footer>
+
     <script src="app.js"></script>
 </body>
 </html>

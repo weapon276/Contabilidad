@@ -14,17 +14,11 @@ let finanzasData = {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 FinanzasPro iniciado');
     
-    // Configurar navegación
     setupNavigation();
     setupConditionalFields();
-    
-    // Configurar instalación
     setupInstallation();
-    
-    // Cargar datos
     loadData();
     
-    // Verificar si ya está instalada
     if (window.matchMedia('(display-mode: standalone)').matches) {
         isAppInstalled = true;
         document.getElementById('pwaStatus').style.display = 'block';
@@ -37,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupInstallation() {
     installBanner = document.getElementById('installBanner');
     
-    // Escuchar evento de instalación
     window.addEventListener('beforeinstallprompt', (e) => {
         console.log('📱 Evento beforeinstallprompt detectado');
         e.preventDefault();
@@ -48,7 +41,6 @@ function setupInstallation() {
         }
     });
 
-    // Botón de instalación
     const installBtn = document.getElementById('installBtn');
     if (installBtn) {
         installBtn.addEventListener('click', async () => {
@@ -72,12 +64,11 @@ function setupInstallation() {
                     console.error('❌ Error en instalación:', error);
                 }
             } else {
-                alert('⚠️ La instalación no está disponible en este momento. Abre la app desde Chrome y usa "Agregar a pantalla de inicio"');
+                alert('⚠️ La instalación no está disponible en este momento.\nAbre la app desde Chrome y usa "Agregar a pantalla de inicio"');
             }
         });
     }
 
-    // Detectar cuando se instala desde fuera
     window.addEventListener('appinstalled', () => {
         console.log('✅ App instalada');
         isAppInstalled = true;
@@ -147,13 +138,39 @@ function setupConditionalFields() {
     if (investmentType) {
         investmentType.addEventListener('change', function() {
             const type = this.value;
-            document.getElementById('fixedIncomeFields').classList.remove('show');
-            document.getElementById('stockFields').classList.remove('show');
+            const fixedIncomeFields = document.getElementById('fixedIncomeFields');
+            const stockFields = document.getElementById('stockFields');
             
+            // Ocultar todos
+            if (fixedIncomeFields) fixedIncomeFields.classList.remove('show');
+            if (stockFields) stockFields.classList.remove('show');
+            
+            // Mostrar según tipo
             if (type === 'nu' || type === 'cetes' || type === 'didi') {
-                document.getElementById('fixedIncomeFields').classList.add('show');
+                if (fixedIncomeFields) fixedIncomeFields.classList.add('show');
+                // Quitar required de campos de acciones
+                document.getElementById('buyPrice').removeAttribute('required');
+                document.getElementById('sharesCount').removeAttribute('required');
+                document.getElementById('stockTicker').removeAttribute('required');
+                // Agregar required a campos de renta fija
+                document.getElementById('interestRate').setAttribute('required', 'required');
+                document.getElementById('investmentTerm').setAttribute('required', 'required');
             } else if (type === 'gbm' || type === 'fibras' || type === 'cripto') {
-                document.getElementById('stockFields').classList.add('show');
+                if (stockFields) stockFields.classList.add('show');
+                // Quitar required de campos de renta fija
+                document.getElementById('interestRate').removeAttribute('required');
+                document.getElementById('investmentTerm').removeAttribute('required');
+                // Agregar required a campos de acciones
+                document.getElementById('buyPrice').setAttribute('required', 'required');
+                document.getElementById('sharesCount').setAttribute('required', 'required');
+                document.getElementById('stockTicker').setAttribute('required', 'required');
+            } else {
+                // Ninguno seleccionado - quitar todos los required
+                document.getElementById('buyPrice').removeAttribute('required');
+                document.getElementById('sharesCount').removeAttribute('required');
+                document.getElementById('stockTicker').removeAttribute('required');
+                document.getElementById('interestRate').removeAttribute('required');
+                document.getElementById('investmentTerm').removeAttribute('required');
             }
         });
     }
@@ -320,14 +337,44 @@ function checkBudgetRules() {
     }
 }
 
-// ============ INVERSIONES ============
+// ============ INVERSIONES (CORREGIDO) ============
 document.getElementById('investmentForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    // Limpiar errores anteriores
+    const errorDiv = document.getElementById('formErrors');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+        errorDiv.innerHTML = '';
+    }
+    
+    // Obtener valores básicos
     const type = document.getElementById('investmentType').value;
-    const name = document.getElementById('investmentName').value;
+    const name = document.getElementById('investmentName').value.trim();
     const date = document.getElementById('investmentDate').value;
     const amount = parseFloat(document.getElementById('investedAmount').value);
-    const notes = document.getElementById('investmentNotes').value;
+    const notes = document.getElementById('investmentNotes').value.trim();
+    
+    // Validaciones básicas
+    if (!type) {
+        alert('❌ Por favor selecciona un tipo de inversión');
+        return;
+    }
+    
+    if (!name) {
+        alert('❌ Por favor ingresa un nombre/descripción');
+        return;
+    }
+    
+    if (!date) {
+        alert('❌ Por favor selecciona una fecha');
+        return;
+    }
+    
+    if (isNaN(amount) || amount <= 0) {
+        alert('❌ Por favor ingresa un monto válido mayor a 0');
+        return;
+    }
     
     let investment = {
         id: Date.now(),
@@ -335,12 +382,25 @@ document.getElementById('investmentForm')?.addEventListener('submit', function(e
         tipo: type,
         nombre: name,
         montoInvertido: amount,
-        notas: notes
+        notas: notes || '',
+        tipoInversion: ''
     };
     
+    // === RENTA FIJA (Nu, CETES, Didi) ===
     if (type === 'nu' || type === 'cetes' || type === 'didi') {
-        const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
-        const term = parseInt(document.getElementById('investmentTerm').value) || 0;
+        const interestRate = parseFloat(document.getElementById('interestRate').value);
+        const term = parseInt(document.getElementById('investmentTerm').value);
+        
+        if (isNaN(interestRate) || interestRate <= 0) {
+            alert('❌ Por favor ingresa una tasa de interés válida');
+            return;
+        }
+        
+        if (isNaN(term) || term <= 0) {
+            alert('❌ Por favor ingresa un plazo válido en meses');
+            return;
+        }
+        
         investment.tasaInteres = interestRate;
         investment.plazoMeses = term;
         investment.tipoInversion = 'renta_fija';
@@ -348,14 +408,30 @@ document.getElementById('investmentForm')?.addEventListener('submit', function(e
         investment.valorActual = amount + investment.rendimientoEstimado;
     }
     
-    if (type === 'gbm' || type === 'fibras' || type === 'cripto') {
-        const ticker = document.getElementById('stockTicker').value || 'N/A';
-        const stockType = document.getElementById('stockType').value || 'nacional';
-        const buyPrice = parseFloat(document.getElementById('buyPrice').value) || 0;
-        const shares = parseInt(document.getElementById('sharesCount').value) || 0;
+    // === RENTA VARIABLE (GBM, FIBRAS, Cripto) ===
+    else if (type === 'gbm' || type === 'fibras' || type === 'cripto') {
+        const ticker = document.getElementById('stockTicker').value.trim();
+        const stockType = document.getElementById('stockType').value;
+        const buyPrice = parseFloat(document.getElementById('buyPrice').value);
+        const shares = parseInt(document.getElementById('sharesCount').value);
         const currentPrice = parseFloat(document.getElementById('currentPrice').value) || buyPrice;
         const hasDividends = document.getElementById('generatesDividends').value === 'si';
         const dividendYield = parseFloat(document.getElementById('dividendYield').value) || 0;
+        
+        if (!ticker) {
+            alert('❌ Por favor ingresa el ticker de la acción');
+            return;
+        }
+        
+        if (isNaN(buyPrice) || buyPrice <= 0) {
+            alert('❌ Por favor ingresa un precio de compra válido');
+            return;
+        }
+        
+        if (isNaN(shares) || shares <= 0) {
+            alert('❌ Por favor ingresa un número de acciones válido');
+            return;
+        }
         
         investment.ticker = ticker;
         investment.tipoAccion = stockType;
@@ -367,20 +443,30 @@ document.getElementById('investmentForm')?.addEventListener('submit', function(e
         investment.tipoInversion = 'renta_variable';
         investment.valorActual = currentPrice * shares;
         investment.gananciaPerdida = (currentPrice - buyPrice) * shares;
+        
         if (hasDividends && dividendYield > 0) {
             investment.dividendosAnuales = (amount * (dividendYield / 100));
         } else {
             investment.dividendosAnuales = 0;
         }
+    } else {
+        // Otro tipo de inversión
+        investment.tipoInversion = 'otro';
+        investment.valorActual = amount;
+        investment.notas = notes || 'Inversión general';
     }
     
+    // Guardar
     finanzasData.inversiones.push(investment);
     saveData();
     updateInvestmentList();
     updateInvestmentSummary();
     this.reset();
+    
+    // Ocultar campos condicionales
     document.getElementById('fixedIncomeFields').classList.remove('show');
     document.getElementById('stockFields').classList.remove('show');
+    
     alert('✅ Inversión registrada correctamente');
 });
 
@@ -411,6 +497,8 @@ function updateInvestmentList() {
                 <span class="${badge}">${label}: $${ganancia.toFixed(2)}</span><br>
                 ${inv.generaDividendos ? `💵 Dividendos anuales: $${(inv.dividendosAnuales || 0).toFixed(2)}` : '🔹 Sin dividendos'}
             `;
+        } else {
+            detalles = `📌 ${inv.notas || 'Sin detalles adicionales'}`;
         }
         return `
             <div class="record-item">
@@ -418,7 +506,7 @@ function updateInvestmentList() {
                 📝 ${inv.nombre}<br>
                 💰 Invertido: $${inv.montoInvertido.toFixed(2)}<br>
                 ${detalles}
-                ${inv.notas ? `📌 ${inv.notas}` : ''}
+                ${inv.notas && inv.tipoInversion !== 'otro' ? `📌 ${inv.notas}` : ''}
                 <button onclick="deleteInvestment(${inv.id})" style="background:#e74c3c; padding:5px 10px; margin-top:5px;">Eliminar</button>
             </div>
         `;
@@ -444,6 +532,11 @@ function updateInvestmentSummary() {
                 <h4>💵 Rendimiento</h4>
                 <p style="font-size:24px; font-weight:bold; color:#e65100;">$${(totalValorActual - totalInvertido).toFixed(2)}</p>
             </div>
+        </div>
+        <div style="margin-top:10px;">
+            <p><strong>📊 Número de inversiones:</strong> ${finanzasData.inversiones.length}</p>
+            <p><strong>🏦 Rentabilidad:</strong> ${totalInvertido > 0 ? ((totalValorActual - totalInvertido) / totalInvertido * 100).toFixed(1) : 0}%</p>
+            ${totalDividendos > 0 ? `<p><strong>💳 Dividendos anuales:</strong> $${totalDividendos.toFixed(2)}</p>` : ''}
         </div>
     `;
 }
@@ -525,10 +618,16 @@ function updateEmergencyFund() {
 // ============ METAS ============
 document.getElementById('goalForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
-    const goalName = document.getElementById('goalName').value;
+    const goalName = document.getElementById('goalName').value.trim();
     const goalCost = parseFloat(document.getElementById('goalCost').value);
     const goalYears = parseFloat(document.getElementById('goalYears').value);
     const monthlySavings = parseFloat(document.getElementById('monthlySavings').value);
+    
+    if (!goalName) { alert('❌ Ingresa el nombre de la meta'); return; }
+    if (isNaN(goalCost) || goalCost <= 0) { alert('❌ Ingresa un costo válido'); return; }
+    if (isNaN(goalYears) || goalYears <= 0) { alert('❌ Ingresa un plazo válido'); return; }
+    if (isNaN(monthlySavings) || monthlySavings <= 0) { alert('❌ Ingresa un ahorro mensual válido'); return; }
+    
     const monthsNeeded = goalCost / monthlySavings;
     const yearsNeeded = monthsNeeded / 12;
     const resultDiv = document.getElementById('goalResult');
@@ -737,7 +836,6 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
             .then(reg => {
                 console.log('✅ ServiceWorker registrado:', reg);
-                // Verificar actualizaciones
                 reg.addEventListener('updatefound', () => {
                     console.log('🔄 Nueva versión disponible');
                 });

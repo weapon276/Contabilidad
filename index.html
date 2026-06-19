@@ -88,6 +88,7 @@
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s;
+            background: white;
         }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; }
         button {
@@ -102,29 +103,6 @@
             transition: transform 0.2s;
         }
         button:hover { transform: translateY(-2px); }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-            animation: slideIn 0.3s;
-        }
-        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .records-list { max-height: 400px; overflow-y: auto; }
         .record-item {
             background: #f8f9fa;
@@ -143,7 +121,14 @@
         .chart-container { height: 300px; margin: 20px 0; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .conditional-field { display: none; margin-top: 10px; padding: 10px; background: #f0f4ff; border-radius: 8px; }
+        .conditional-field { 
+            display: none; 
+            margin-top: 10px; 
+            padding: 15px; 
+            background: #f0f4ff; 
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
         .conditional-field.show { display: block; }
         .emergency-fund { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #4CAF50; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
@@ -181,10 +166,12 @@
             font-size: 12px;
             z-index: 9999;
         }
+        .required-star { color: #e74c3c; font-weight: bold; margin-left: 2px; }
+        .error-message { color: #e74c3c; font-size: 12px; margin-top: 5px; display: none; }
+        .form-group.error input { border-color: #e74c3c; }
     </style>
 </head>
 <body>
-    <!-- Barra de estado PWA -->
     <div id="pwaStatus" class="pwa-status" style="display:none;">✅ App instalada correctamente</div>
 
     <div id="installBanner">
@@ -242,9 +229,9 @@
         <div class="card">
             <h3>➕ Registrar Ingreso</h3>
             <form id="incomeForm">
-                <div class="form-group"><label>📅 Fecha</label><input type="date" id="incomeDate" required></div>
+                <div class="form-group"><label>📅 Fecha <span class="required-star">*</span></label><input type="date" id="incomeDate" required></div>
                 <div class="form-group">
-                    <label>📝 Tipo de Ingreso</label>
+                    <label>📝 Tipo de Ingreso <span class="required-star">*</span></label>
                     <select id="incomeType" required>
                         <option value="nomina">Nómina</option>
                         <option value="bonos">Bonos/Aguinaldo</option>
@@ -252,9 +239,9 @@
                         <option value="otros">Otros Ingresos</option>
                     </select>
                 </div>
-                <div class="form-group"><label>💰 Monto Bruto</label><input type="number" id="grossAmount" step="0.01" required></div>
+                <div class="form-group"><label>💰 Monto Bruto <span class="required-star">*</span></label><input type="number" id="grossAmount" step="0.01" required></div>
                 <div class="form-group"><label>📉 Retenciones (ISPT + IMSS)</label><input type="number" id="deductions" step="0.01" value="0"></div>
-                <div class="form-group"><label>💵 Monto Neto</label><input type="number" id="netAmount" step="0.01" readonly></div>
+                <div class="form-group"><label>💵 Monto Neto</label><input type="number" id="netAmount" step="0.01" readonly style="background:#f0f0f0;"></div>
                 <button type="submit">✅ Registrar Ingreso</button>
             </form>
         </div>
@@ -269,9 +256,9 @@
         <div class="card">
             <h3>➕ Registrar Gasto</h3>
             <form id="expenseForm">
-                <div class="form-group"><label>📅 Fecha</label><input type="date" id="expenseDate" required></div>
+                <div class="form-group"><label>📅 Fecha <span class="required-star">*</span></label><input type="date" id="expenseDate" required></div>
                 <div class="form-group">
-                    <label>🏷️ Categoría</label>
+                    <label>🏷️ Categoría <span class="required-star">*</span></label>
                     <select id="expenseCategory" required>
                         <option value="fijo">Gastos Fijos (Renta, servicios)</option>
                         <option value="variable">Gastos Variables (Supermercado, transporte)</option>
@@ -279,8 +266,8 @@
                         <option value="deuda">Deudas (Tarjetas, préstamos)</option>
                     </select>
                 </div>
-                <div class="form-group"><label>📝 Descripción</label><input type="text" id="expenseDesc" required></div>
-                <div class="form-group"><label>💰 Monto</label><input type="number" id="expenseAmount" step="0.01" required></div>
+                <div class="form-group"><label>📝 Descripción <span class="required-star">*</span></label><input type="text" id="expenseDesc" required></div>
+                <div class="form-group"><label>💰 Monto <span class="required-star">*</span></label><input type="number" id="expenseAmount" step="0.01" required></div>
                 <button type="submit">✅ Registrar Gasto</button>
             </form>
         </div>
@@ -295,10 +282,12 @@
         <div class="card">
             <h3>➕ Registrar Inversión</h3>
             <form id="investmentForm">
-                <div class="form-group"><label>📅 Fecha de Inversión</label><input type="date" id="investmentDate" required></div>
+                <div class="form-group"><label>📅 Fecha de Inversión <span class="required-star">*</span></label><input type="date" id="investmentDate" required></div>
+                
                 <div class="form-group">
-                    <label>🏦 Tipo de Inversión</label>
+                    <label>🏦 Tipo de Inversión <span class="required-star">*</span></label>
                     <select id="investmentType" required>
+                        <option value="">Selecciona un tipo...</option>
                         <option value="nu">Nu (Cuenta de ahorro)</option>
                         <option value="gbm">GBM+ (Acciones)</option>
                         <option value="cetes">CETES</option>
@@ -308,24 +297,27 @@
                         <option value="otro">Otro</option>
                     </select>
                 </div>
-                <div class="form-group"><label>📝 Nombre/Descripción</label><input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required></div>
+
+                <div class="form-group"><label>📝 Nombre/Descripción <span class="required-star">*</span></label><input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required></div>
                 
+                <!-- Campos de Renta Fija -->
                 <div id="fixedIncomeFields" class="conditional-field">
-                    <h4>📊 Datos de Renta Fija</h4>
-                    <div class="form-group"><label>📈 Tasa de Interés Anual (%)</label><input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5"></div>
-                    <div class="form-group"><label>📅 Plazo (meses)</label><input type="number" id="investmentTerm" placeholder="Ej: 12"></div>
+                    <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Renta Fija</h4>
+                    <div class="form-group"><label>📈 Tasa de Interés Anual (%) <span class="required-star">*</span></label><input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5"></div>
+                    <div class="form-group"><label>📅 Plazo (meses) <span class="required-star">*</span></label><input type="number" id="investmentTerm" placeholder="Ej: 12"></div>
                 </div>
 
+                <!-- Campos de Renta Variable -->
                 <div id="stockFields" class="conditional-field">
-                    <h4>📊 Datos de Acciones</h4>
-                    <div class="form-group"><label>🏷️ Ticker de la Acción</label><input type="text" id="stockTicker" placeholder="Ej: AAPL"></div>
+                    <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Acciones</h4>
+                    <div class="form-group"><label>🏷️ Ticker de la Acción <span class="required-star">*</span></label><input type="text" id="stockTicker" placeholder="Ej: AAPL, AMZN"></div>
                     <div class="form-group">
-                        <label>📈 Tipo de Acción</label>
+                        <label>📈 Tipo de Acción <span class="required-star">*</span></label>
                         <select id="stockType"><option value="nacional">Nacional (BMV)</option><option value="internacional">Internacional (NYSE/NASDAQ)</option><option value="etf">ETF</option></select>
                     </div>
-                    <div class="form-group"><label>💵 Precio de Compra</label><input type="number" id="buyPrice" step="0.01" required></div>
-                    <div class="form-group"><label>📦 Número de Acciones</label><input type="number" id="sharesCount" step="1" required></div>
-                    <div class="form-group"><label>💰 Precio Actual</label><input type="number" id="currentPrice" step="0.01"></div>
+                    <div class="form-group"><label>💵 Precio de Compra <span class="required-star">*</span></label><input type="number" id="buyPrice" step="0.01" placeholder="Ej: 150.50"></div>
+                    <div class="form-group"><label>📦 Número de Acciones <span class="required-star">*</span></label><input type="number" id="sharesCount" step="1" placeholder="Ej: 10"></div>
+                    <div class="form-group"><label>💰 Precio Actual (opcional)</label><input type="number" id="currentPrice" step="0.01" placeholder="Ej: 160.00"></div>
                     <div class="form-group">
                         <label>💵 Genera Dividendos</label>
                         <select id="generatesDividends"><option value="no">No</option><option value="si">Sí</option></select>
@@ -333,8 +325,11 @@
                     <div class="form-group"><label>📈 Rendimiento por Dividendo (%)</label><input type="number" id="dividendYield" step="0.01" placeholder="Ej: 3.5"></div>
                 </div>
 
-                <div class="form-group"><label>💰 Monto Invertido ($)</label><input type="number" id="investedAmount" step="0.01" required></div>
-                <div class="form-group"><label>📝 Notas adicionales</label><textarea id="investmentNotes" rows="2"></textarea></div>
+                <div class="form-group"><label>💰 Monto Invertido ($) <span class="required-star">*</span></label><input type="number" id="investedAmount" step="0.01" required></div>
+                <div class="form-group"><label>📝 Notas adicionales</label><textarea id="investmentNotes" rows="2" placeholder="Comentarios sobre esta inversión..."></textarea></div>
+                
+                <div id="formErrors" style="color:#e74c3c; margin-top:10px; display:none; padding:10px; background:#ffebee; border-radius:8px;"></div>
+                
                 <button type="submit">✅ Registrar Inversión</button>
             </form>
         </div>
@@ -353,10 +348,10 @@
         <div class="card">
             <h3>🎯 Planificador de Metas</h3>
             <form id="goalForm">
-                <div class="form-group"><label>🏠 ¿Qué quieres lograr?</label><input type="text" id="goalName" placeholder="Ej: Comprar una casa" required></div>
-                <div class="form-group"><label>💰 Costo total</label><input type="number" id="goalCost" step="0.01" required></div>
-                <div class="form-group"><label>⏱️ Plazo (años)</label><input type="number" id="goalYears" step="0.5" min="1" max="30" required></div>
-                <div class="form-group"><label>💵 Ahorro mensual ($)</label><input type="number" id="monthlySavings" step="0.01" required></div>
+                <div class="form-group"><label>🏠 ¿Qué quieres lograr? <span class="required-star">*</span></label><input type="text" id="goalName" placeholder="Ej: Comprar una casa" required></div>
+                <div class="form-group"><label>💰 Costo total <span class="required-star">*</span></label><input type="number" id="goalCost" step="0.01" required></div>
+                <div class="form-group"><label>⏱️ Plazo (años) <span class="required-star">*</span></label><input type="number" id="goalYears" step="0.5" min="1" max="30" required></div>
+                <div class="form-group"><label>💵 Ahorro mensual ($) <span class="required-star">*</span></label><input type="number" id="monthlySavings" step="0.01" required></div>
                 <button type="submit">📊 Generar Plan</button>
             </form>
         </div>

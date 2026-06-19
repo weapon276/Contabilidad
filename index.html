@@ -14,19 +14,13 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             padding-bottom: 80px;
         }
-
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -37,7 +31,6 @@
             top: 0;
             z-index: 100;
         }
-
         .header h1 {
             font-size: 1.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -45,7 +38,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
         .nav-tabs {
             display: flex;
             background: white;
@@ -54,7 +46,6 @@
             overflow-x: auto;
             border-bottom: 2px solid #e0e0e0;
         }
-
         .tab-btn {
             flex: 1;
             padding: 10px 8px;
@@ -68,27 +59,13 @@
             color: #666;
             white-space: nowrap;
         }
-
         .tab-btn.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.5s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        .tab-content { display: none; padding: 20px; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .card {
             background: white;
             border-radius: 15px;
@@ -96,25 +73,14 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
         .card h3 {
             margin-bottom: 15px;
             color: #2C3E50;
             border-left: 4px solid #667eea;
             padding-left: 10px;
         }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-        }
-
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
         input, select, textarea {
             width: 100%;
             padding: 10px;
@@ -123,12 +89,7 @@
             font-size: 16px;
             transition: border-color 0.3s;
         }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; }
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -140,11 +101,7 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-        }
-
+        button:hover { transform: translateY(-2px); }
         .modal {
             display: none;
             position: fixed;
@@ -157,11 +114,7 @@
             justify-content: center;
             align-items: center;
         }
-
-        .modal.active {
-            display: flex;
-        }
-
+        .modal.active { display: flex; }
         .modal-content {
             background: white;
             border-radius: 20px;
@@ -171,17 +124,8 @@
             overflow-y: auto;
             animation: slideIn 0.3s;
         }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .records-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .records-list { max-height: 400px; overflow-y: auto; }
         .record-item {
             background: #f8f9fa;
             padding: 12px;
@@ -189,7 +133,6 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
-
         .advice-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -197,62 +140,18 @@
             border-radius: 15px;
             margin-bottom: 20px;
         }
-
-        .chart-container {
-            height: 300px;
-            margin: 20px 0;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .investment-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            border-left: 4px solid #27ae60;
-        }
-
-        .emergency-fund {
-            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border: 2px solid #4CAF50;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
+        .chart-container { height: 300px; margin: 20px 0; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .conditional-field { display: none; margin-top: 10px; padding: 10px; background: #f0f4ff; border-radius: 8px; }
+        .conditional-field.show { display: block; }
+        .emergency-fund { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #4CAF50; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
         .badge-success { background: #4CAF50; color: white; }
         .badge-warning { background: #FF9800; color: white; }
-        .badge-info { background: #2196F3; color: white; }
-
-        @media (max-width: 768px) {
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            .tab-btn {
-                font-size: 10px;
-                padding: 6px 4px;
-            }
-        }
-
+        .profit-badge { background: #27ae60; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .loss-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .tab-btn { font-size: 10px; padding: 6px 4px; } }
         #installBanner {
             display: none;
             position: fixed;
@@ -267,46 +166,31 @@
             z-index: 1000;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-
-        #installBtn {
-            background: #667eea;
-            margin-top: 10px;
-            padding: 10px 20px;
-        }
-
-        .conditional-field {
-            display: none;
-            margin-top: 10px;
-            padding: 10px;
-            background: #f0f4ff;
-            border-radius: 8px;
-        }
-
-        .conditional-field.show {
-            display: block;
-        }
-
-        .profit-badge {
-            background: #27ae60;
+        #installBanner.show { display: block; }
+        #installBtn { background: #667eea; margin-top: 10px; padding: 10px 20px; }
+        .hidden { display: none !important; }
+        .pwa-status {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #4CAF50;
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-
-        .loss-badge {
-            background: #e74c3c;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+            z-index: 9999;
         }
     </style>
 </head>
 <body>
+    <!-- Barra de estado PWA -->
+    <div id="pwaStatus" class="pwa-status" style="display:none;">✅ App instalada correctamente</div>
+
     <div id="installBanner">
         <p>📱 Instala FinanzasPro para usarla sin internet</p>
         <button id="installBtn">Instalar App</button>
+        <button onclick="document.getElementById('installBanner').classList.remove('show')" style="background:transparent; color:#999; padding:5px 10px; font-size:12px;">Cerrar</button>
     </div>
 
     <div class="header">
@@ -323,24 +207,20 @@
         <button class="tab-btn" data-tab="consejos">💡 Consejos</button>
     </div>
 
-    <!-- ==================== DASHBOARD ==================== -->
+    <!-- DASHBOARD -->
     <div id="dashboard" class="tab-content active">
         <div class="advice-card" id="dashboardAdvice">
             <h3>🎯 Consejo Financiero del Día</h3>
             <p id="dailyAdvice">Aplicando la regla 50/30/20</p>
         </div>
-        
         <div class="card">
             <h3>📈 Resumen Financiero</h3>
             <div id="summaryStats"></div>
         </div>
-
-        <!-- Fondo de Emergencia -->
         <div class="card" id="emergencyFundCard">
             <h3>🛡️ Fondo de Emergencia</h3>
             <div id="emergencyFundDisplay"></div>
         </div>
-
         <div class="grid-2">
             <div class="card">
                 <h3>💰 Distribución de Gastos</h3>
@@ -351,22 +231,18 @@
                 <div id="trendsChart" class="chart-container"></div>
             </div>
         </div>
-
         <div class="card">
             <h3>📈 Distribución de Inversiones</h3>
             <div id="investmentsChart" class="chart-container"></div>
         </div>
     </div>
 
-    <!-- ==================== INGRESOS ==================== -->
+    <!-- INGRESOS -->
     <div id="ingresos" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Ingreso</h3>
             <form id="incomeForm">
-                <div class="form-group">
-                    <label>📅 Fecha</label>
-                    <input type="date" id="incomeDate" required>
-                </div>
+                <div class="form-group"><label>📅 Fecha</label><input type="date" id="incomeDate" required></div>
                 <div class="form-group">
                     <label>📝 Tipo de Ingreso</label>
                     <select id="incomeType" required>
@@ -376,37 +252,24 @@
                         <option value="otros">Otros Ingresos</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>💰 Monto Bruto</label>
-                    <input type="number" id="grossAmount" step="0.01" required>
-                </div>
-                <div class="form-group" id="deductionsGroup">
-                    <label>📉 Retenciones (ISPT + IMSS)</label>
-                    <input type="number" id="deductions" step="0.01" value="0">
-                </div>
-                <div class="form-group">
-                    <label>💵 Monto Neto</label>
-                    <input type="number" id="netAmount" step="0.01" readonly>
-                </div>
+                <div class="form-group"><label>💰 Monto Bruto</label><input type="number" id="grossAmount" step="0.01" required></div>
+                <div class="form-group"><label>📉 Retenciones (ISPT + IMSS)</label><input type="number" id="deductions" step="0.01" value="0"></div>
+                <div class="form-group"><label>💵 Monto Neto</label><input type="number" id="netAmount" step="0.01" readonly></div>
                 <button type="submit">✅ Registrar Ingreso</button>
             </form>
         </div>
-
         <div class="card">
             <h3>📜 Historial de Ingresos</h3>
             <div id="incomeList" class="records-list"></div>
         </div>
     </div>
 
-    <!-- ==================== EGRESOS ==================== -->
+    <!-- EGRESOS -->
     <div id="egresos" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Gasto</h3>
             <form id="expenseForm">
-                <div class="form-group">
-                    <label>📅 Fecha</label>
-                    <input type="date" id="expenseDate" required>
-                </div>
+                <div class="form-group"><label>📅 Fecha</label><input type="date" id="expenseDate" required></div>
                 <div class="form-group">
                     <label>🏷️ Categoría</label>
                     <select id="expenseCategory" required>
@@ -416,34 +279,23 @@
                         <option value="deuda">Deudas (Tarjetas, préstamos)</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>📝 Descripción</label>
-                    <input type="text" id="expenseDesc" required>
-                </div>
-                <div class="form-group">
-                    <label>💰 Monto</label>
-                    <input type="number" id="expenseAmount" step="0.01" required>
-                </div>
+                <div class="form-group"><label>📝 Descripción</label><input type="text" id="expenseDesc" required></div>
+                <div class="form-group"><label>💰 Monto</label><input type="number" id="expenseAmount" step="0.01" required></div>
                 <button type="submit">✅ Registrar Gasto</button>
             </form>
         </div>
-
         <div class="card">
             <h3>📜 Historial de Gastos</h3>
             <div id="expenseList" class="records-list"></div>
         </div>
     </div>
 
-    <!-- ==================== INVERSIONES ==================== -->
+    <!-- INVERSIONES -->
     <div id="inversiones" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Inversión</h3>
             <form id="investmentForm">
-                <div class="form-group">
-                    <label>📅 Fecha de Inversión</label>
-                    <input type="date" id="investmentDate" required>
-                </div>
-                
+                <div class="form-group"><label>📅 Fecha de Inversión</label><input type="date" id="investmentDate" required></div>
                 <div class="form-group">
                     <label>🏦 Tipo de Inversión</label>
                     <select id="investmentType" required>
@@ -456,152 +308,83 @@
                         <option value="otro">Otro</option>
                     </select>
                 </div>
-
-                <div class="form-group">
-                    <label>📝 Nombre/Descripción</label>
-                    <input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple, CETES - Bono 2025" required>
-                </div>
-
-                <!-- Campos específicos para Nu/CETES/Didi -->
+                <div class="form-group"><label>📝 Nombre/Descripción</label><input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required></div>
+                
                 <div id="fixedIncomeFields" class="conditional-field">
                     <h4>📊 Datos de Renta Fija</h4>
-                    <div class="form-group">
-                        <label>📈 Tasa de Interés Anual (%)</label>
-                        <input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5">
-                    </div>
-                    <div class="form-group">
-                        <label>📅 Plazo (meses)</label>
-                        <input type="number" id="investmentTerm" placeholder="Ej: 12">
-                    </div>
+                    <div class="form-group"><label>📈 Tasa de Interés Anual (%)</label><input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5"></div>
+                    <div class="form-group"><label>📅 Plazo (meses)</label><input type="number" id="investmentTerm" placeholder="Ej: 12"></div>
                 </div>
 
-                <!-- Campos específicos para GBM -->
                 <div id="stockFields" class="conditional-field">
                     <h4>📊 Datos de Acciones</h4>
-                    <div class="form-group">
-                        <label>🏷️ Ticker de la Acción</label>
-                        <input type="text" id="stockTicker" placeholder="Ej: AAPL, AMZN, NFLX">
-                    </div>
+                    <div class="form-group"><label>🏷️ Ticker de la Acción</label><input type="text" id="stockTicker" placeholder="Ej: AAPL"></div>
                     <div class="form-group">
                         <label>📈 Tipo de Acción</label>
-                        <select id="stockType">
-                            <option value="nacional">Nacional (BMV)</option>
-                            <option value="internacional">Internacional (NYSE/NASDAQ)</option>
-                            <option value="etf">ETF</option>
-                        </select>
+                        <select id="stockType"><option value="nacional">Nacional (BMV)</option><option value="internacional">Internacional (NYSE/NASDAQ)</option><option value="etf">ETF</option></select>
                     </div>
-                    <div class="form-group">
-                        <label>💵 Precio de Compra (por acción)</label>
-                        <input type="number" id="buyPrice" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>📦 Número de Acciones</label>
-                        <input type="number" id="sharesCount" step="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label>💰 Precio Actual (opcional, para rendimiento)</label>
-                        <input type="number" id="currentPrice" step="0.01">
-                    </div>
+                    <div class="form-group"><label>💵 Precio de Compra</label><input type="number" id="buyPrice" step="0.01" required></div>
+                    <div class="form-group"><label>📦 Número de Acciones</label><input type="number" id="sharesCount" step="1" required></div>
+                    <div class="form-group"><label>💰 Precio Actual</label><input type="number" id="currentPrice" step="0.01"></div>
                     <div class="form-group">
                         <label>💵 Genera Dividendos</label>
-                        <select id="generatesDividends">
-                            <option value="no">No</option>
-                            <option value="si">Sí</option>
-                        </select>
+                        <select id="generatesDividends"><option value="no">No</option><option value="si">Sí</option></select>
                     </div>
-                    <div class="form-group">
-                        <label>📈 Rendimiento por Dividendo (%)</label>
-                        <input type="number" id="dividendYield" step="0.01" placeholder="Ej: 3.5">
-                    </div>
+                    <div class="form-group"><label>📈 Rendimiento por Dividendo (%)</label><input type="number" id="dividendYield" step="0.01" placeholder="Ej: 3.5"></div>
                 </div>
 
-                <!-- Campos comunes -->
-                <div class="form-group">
-                    <label>💰 Monto Invertido ($)</label>
-                    <input type="number" id="investedAmount" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>📝 Notas adicionales</label>
-                    <textarea id="investmentNotes" rows="2" placeholder="Comentarios sobre esta inversión..."></textarea>
-                </div>
+                <div class="form-group"><label>💰 Monto Invertido ($)</label><input type="number" id="investedAmount" step="0.01" required></div>
+                <div class="form-group"><label>📝 Notas adicionales</label><textarea id="investmentNotes" rows="2"></textarea></div>
                 <button type="submit">✅ Registrar Inversión</button>
             </form>
         </div>
-
         <div class="card">
             <h3>📊 Resumen de Inversiones</h3>
             <div id="investmentSummary"></div>
         </div>
-
         <div class="card">
             <h3>📜 Historial de Inversiones</h3>
             <div id="investmentList" class="records-list"></div>
         </div>
     </div>
 
-    <!-- ==================== METAS ==================== -->
+    <!-- METAS -->
     <div id="metas" class="tab-content">
         <div class="card">
             <h3>🎯 Planificador de Metas</h3>
             <form id="goalForm">
-                <div class="form-group">
-                    <label>🏠 ¿Qué quieres lograr?</label>
-                    <input type="text" id="goalName" placeholder="Ej: Comprar una casa, Terreno, Auto..." required>
-                </div>
-                <div class="form-group">
-                    <label>💰 Costo total del objetivo</label>
-                    <input type="number" id="goalCost" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>⏱️ Plazo (años)</label>
-                    <input type="number" id="goalYears" step="0.5" min="1" max="30" required>
-                </div>
-                <div class="form-group">
-                    <label>💵 Ahorro mensual disponible ($)</label>
-                    <input type="number" id="monthlySavings" step="0.01" required>
-                </div>
+                <div class="form-group"><label>🏠 ¿Qué quieres lograr?</label><input type="text" id="goalName" placeholder="Ej: Comprar una casa" required></div>
+                <div class="form-group"><label>💰 Costo total</label><input type="number" id="goalCost" step="0.01" required></div>
+                <div class="form-group"><label>⏱️ Plazo (años)</label><input type="number" id="goalYears" step="0.5" min="1" max="30" required></div>
+                <div class="form-group"><label>💵 Ahorro mensual ($)</label><input type="number" id="monthlySavings" step="0.01" required></div>
                 <button type="submit">📊 Generar Plan</button>
             </form>
         </div>
-
         <div id="goalResult" class="card" style="display: none;"></div>
-        
         <div class="card">
             <h3>💪 Mis Metas Activas</h3>
             <div id="activeGoals"></div>
         </div>
     </div>
 
-    <!-- ==================== CONSEJOS ==================== -->
+    <!-- CONSEJOS -->
     <div id="consejos" class="tab-content">
         <div class="card">
             <h3>📖 Regla Financiera 50/30/20</h3>
             <div class="grid-2">
-                <div style="background:#e3f2fd; padding:15px; border-radius:10px;">
-                    <h4>💰 50% - Necesidades</h4>
-                    <p>Gastos básicos: Renta, servicios, alimentación, transporte</p>
-                </div>
-                <div style="background:#fff3e0; padding:15px; border-radius:10px;">
-                    <h4>🎮 30% - Deseos Personales</h4>
-                    <p>Entretenimiento, restaurantes, compras no esenciales</p>
-                </div>
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px;">
-                    <h4>📈 20% - Inversión/Ahorro</h4>
-                    <p>Fondo de emergencia, inversiones, retiro</p>
-                </div>
+                <div style="background:#e3f2fd; padding:15px; border-radius:10px;"><h4>💰 50% - Necesidades</h4><p>Gastos básicos: Renta, servicios, alimentación</p></div>
+                <div style="background:#fff3e0; padding:15px; border-radius:10px;"><h4>🎮 30% - Deseos Personales</h4><p>Entretenimiento, restaurantes, compras</p></div>
+                <div style="background:#e8f5e9; padding:15px; border-radius:10px;"><h4>📈 20% - Inversión/Ahorro</h4><p>Fondo de emergencia, inversiones</p></div>
             </div>
         </div>
-
         <div class="card">
             <h3>🛡️ Fondo de Emergencia</h3>
             <div id="emergencyAdvice"></div>
         </div>
-
         <div class="card">
-            <h3>🔍 Análisis de tus hábitos</h3>
+            <h3>🔍 Análisis de hábitos</h3>
             <div id="habitAnalysis"></div>
         </div>
-
         <div class="card">
             <h3>💡 Consejos para reducir gastos hormiga</h3>
             <ul id="tipsList">
@@ -612,20 +395,19 @@
                 <li>📦 Compra al mayoreo productos no perecederos</li>
             </ul>
         </div>
-
         <div class="card">
-            <h3>📚 Estrategias de Inversión Recomendadas</h3>
+            <h3>📚 Estrategias de Inversión</h3>
             <div id="investmentStrategies">
-                <p><strong>🔹 Principiante:</strong> CETES + Nu (70% renta fija, 30% renta variable)</p>
-                <p><strong>🔹 Intermedio:</strong> FIBRAS + ETFs + CETES (50% renta fija, 50% renta variable)</p>
-                <p><strong>🔹 Avanzado:</strong> GBM + FIBRAS + Cripto (30% renta fija, 70% renta variable)</p>
+                <p><strong>🔹 Principiante:</strong> CETES + Nu (70% renta fija)</p>
+                <p><strong>🔹 Intermedio:</strong> FIBRAS + ETFs + CETES (50/50)</p>
+                <p><strong>🔹 Avanzado:</strong> GBM + FIBRAS + Cripto (30% fija, 70% variable)</p>
             </div>
         </div>
     </div>
 
-    <footer style="text-align: center; padding: 20px; background: rgba(255,255,255,0.9); margin-top: 30px;">
+    <footer style="text-align:center; padding:20px; background:rgba(255,255,255,0.9); margin-top:30px;">
         <p>✨ Creado por <strong>weapon276</strong> | 📱 ¿Necesitas una web para tu negocio?</p>
-        <p style="font-size: 11px; opacity: 0.7;">FinanzasPro © 2025 - Hecho con ❤️ por weapon276</p>
+        <p style="font-size:11px; opacity:0.7;">FinanzasPro © 2025</p>
     </footer>
 
     <script src="app.js"></script>

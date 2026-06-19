@@ -347,7 +347,7 @@ function checkBudgetRules() {
     }
 }
 
-// ============ INVERSIONES (CORREGIDO - VALIDACIÓN COMPLETA) ============
+// ============ INVERSIONES (CORREGIDO) ============
 document.getElementById('investmentForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     

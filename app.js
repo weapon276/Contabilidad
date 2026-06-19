@@ -1,6 +1,7 @@
 // ============ VARIABLES GLOBALES ============
-let deferredPrompt;
-let installBanner = document.getElementById('installBanner');
+let deferredPrompt = null;
+let installBanner = null;
+let isAppInstalled = false;
 
 let finanzasData = {
     ingresos: [],
@@ -10,59 +11,115 @@ let finanzasData = {
 };
 
 // ============ INSTALACIÓN PWA ============
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (installBanner) installBanner.style.display = 'block';
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 FinanzasPro iniciado');
+    
+    // Configurar navegación
+    setupNavigation();
+    setupConditionalFields();
+    
+    // Configurar instalación
+    setupInstallation();
+    
+    // Cargar datos
+    loadData();
+    
+    // Verificar si ya está instalada
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        isAppInstalled = true;
+        document.getElementById('pwaStatus').style.display = 'block';
+        document.getElementById('pwaStatus').textContent = '✅ App instalada - Modo offline';
+        const banner = document.getElementById('installBanner');
+        if (banner) banner.style.display = 'none';
+    }
 });
 
-const installBtn = document.getElementById('installBtn');
-if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('App instalada');
-                if (installBanner) installBanner.style.display = 'none';
-            }
-            deferredPrompt = null;
+function setupInstallation() {
+    installBanner = document.getElementById('installBanner');
+    
+    // Escuchar evento de instalación
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('📱 Evento beforeinstallprompt detectado');
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBanner) {
+            installBanner.style.display = 'block';
+            installBanner.classList.add('show');
         }
+    });
+
+    // Botón de instalación
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                try {
+                    console.log('📲 Mostrando prompt de instalación');
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`📊 Resultado: ${outcome}`);
+                    if (outcome === 'accepted') {
+                        isAppInstalled = true;
+                        if (installBanner) {
+                            installBanner.style.display = 'none';
+                            installBanner.classList.remove('show');
+                        }
+                        document.getElementById('pwaStatus').style.display = 'block';
+                        document.getElementById('pwaStatus').textContent = '✅ App instalada correctamente';
+                    }
+                    deferredPrompt = null;
+                } catch (error) {
+                    console.error('❌ Error en instalación:', error);
+                }
+            } else {
+                alert('⚠️ La instalación no está disponible en este momento. Abre la app desde Chrome y usa "Agregar a pantalla de inicio"');
+            }
+        });
+    }
+
+    // Detectar cuando se instala desde fuera
+    window.addEventListener('appinstalled', () => {
+        console.log('✅ App instalada');
+        isAppInstalled = true;
+        if (installBanner) {
+            installBanner.style.display = 'none';
+            installBanner.classList.remove('show');
+        }
+        document.getElementById('pwaStatus').style.display = 'block';
+        document.getElementById('pwaStatus').textContent = '✅ App instalada correctamente';
     });
 }
 
-window.addEventListener('appinstalled', () => {
-    console.log('App instalada exitosamente');
-    if (installBanner) installBanner.style.display = 'none';
-});
-
 // ============ CARGA Y GUARDADO ============
 function loadData() {
-    const saved = localStorage.getItem('finanzasData');
-    if (saved) {
-        finanzasData = JSON.parse(saved);
-        // Asegurar que exista el campo inversiones
-        if (!finanzasData.inversiones) finanzasData.inversiones = [];
+    try {
+        const saved = localStorage.getItem('finanzasData');
+        if (saved) {
+            finanzasData = JSON.parse(saved);
+            if (!finanzasData.inversiones) finanzasData.inversiones = [];
+        }
+        console.log('📂 Datos cargados:', finanzasData);
+    } catch (error) {
+        console.error('❌ Error al cargar datos:', error);
     }
     updateAllDisplays();
 }
 
 function saveData() {
-    localStorage.setItem('finanzasData', JSON.stringify(finanzasData));
+    try {
+        localStorage.setItem('finanzasData', JSON.stringify(finanzasData));
+        console.log('💾 Datos guardados');
+    } catch (error) {
+        console.error('❌ Error al guardar:', error);
+    }
 }
 
 // ============ NAVEGACIÓN ============
-document.addEventListener('DOMContentLoaded', function() {
-    setupNavigation();
-    setupConditionalFields();
-    loadData();
-});
-
 function setupNavigation() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
-            showTab(tabName);
+            window.showTab(tabName);
         });
     });
 }
@@ -130,6 +187,7 @@ document.getElementById('incomeForm')?.addEventListener('submit', function(e) {
     updateIncomeList();
     showAdviceForIncome(ingreso.montoNeto);
     this.reset();
+    alert('✅ Ingreso registrado correctamente');
 });
 
 function updateIncomeList() {
@@ -174,6 +232,7 @@ document.getElementById('expenseForm')?.addEventListener('submit', function(e) {
     updateExpenseList();
     checkBudgetRules();
     this.reset();
+    alert('✅ Gasto registrado correctamente');
 });
 
 function updateExpenseList() {
@@ -254,9 +313,9 @@ function checkBudgetRules() {
     if (advice) {
         if (totalGastos > gastosRecomendados) {
             const exceso = totalGastos - gastosRecomendados;
-            advice.innerHTML = `⚠️ Alerta: Has excedido el presupuesto recomendado en $${exceso.toFixed(2)}. Revisa tus gastos variables y reduce gastos hormiga.`;
+            advice.innerHTML = `⚠️ Alerta: Has excedido el presupuesto en $${exceso.toFixed(2)}. Revisa tus gastos.`;
         } else {
-            advice.innerHTML = `✅ Buen control financiero. Tus gastos están dentro del presupuesto recomendado.`;
+            advice.innerHTML = `✅ Buen control financiero. Tus gastos están dentro del presupuesto.`;
         }
     }
 }
@@ -279,19 +338,16 @@ document.getElementById('investmentForm')?.addEventListener('submit', function(e
         notas: notes
     };
     
-    // Campos para renta fija (Nu, CETES, Didi)
     if (type === 'nu' || type === 'cetes' || type === 'didi') {
         const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
         const term = parseInt(document.getElementById('investmentTerm').value) || 0;
         investment.tasaInteres = interestRate;
         investment.plazoMeses = term;
         investment.tipoInversion = 'renta_fija';
-        // Calcular rendimiento estimado
         investment.rendimientoEstimado = (amount * (interestRate / 100)) * (term / 12);
         investment.valorActual = amount + investment.rendimientoEstimado;
     }
     
-    // Campos para acciones (GBM, FIBRAS, Cripto)
     if (type === 'gbm' || type === 'fibras' || type === 'cripto') {
         const ticker = document.getElementById('stockTicker').value || 'N/A';
         const stockType = document.getElementById('stockType').value || 'nacional';
@@ -309,12 +365,8 @@ document.getElementById('investmentForm')?.addEventListener('submit', function(e
         investment.generaDividendos = hasDividends;
         investment.rendimientoDividendo = dividendYield;
         investment.tipoInversion = 'renta_variable';
-        
-        // Calcular valor actual
         investment.valorActual = currentPrice * shares;
-        // Calcular ganancia/pérdida
         investment.gananciaPerdida = (currentPrice - buyPrice) * shares;
-        // Calcular dividendos anuales estimados
         if (hasDividends && dividendYield > 0) {
             investment.dividendosAnuales = (amount * (dividendYield / 100));
         } else {
@@ -392,18 +444,6 @@ function updateInvestmentSummary() {
                 <h4>💵 Rendimiento</h4>
                 <p style="font-size:24px; font-weight:bold; color:#e65100;">$${(totalValorActual - totalInvertido).toFixed(2)}</p>
             </div>
-            <div style="background:#fce4ec; padding:15px; border-radius:10px;">
-                <h4>💳 Dividendos Anuales</h4>
-                <p style="font-size:24px; font-weight:bold; color:#c62828;">$${totalDividendos.toFixed(2)}</p>
-            </div>
-            <div style="background:#f3e5f5; padding:15px; border-radius:10px;">
-                <h4>📊 Número de Inversiones</h4>
-                <p style="font-size:24px; font-weight:bold; color:#6a1b9a;">${finanzasData.inversiones.length}</p>
-            </div>
-            <div style="background:#e8eaf6; padding:15px; border-radius:10px;">
-                <h4>🏦 Rentabilidad %</h4>
-                <p style="font-size:24px; font-weight:bold; color:#283593;">${totalInvertido > 0 ? ((totalValorActual - totalInvertido) / totalInvertido * 100).toFixed(1) : 0}%</p>
-            </div>
         </div>
     `;
 }
@@ -421,7 +461,6 @@ window.deleteInvestment = function(id) {
 // ============ FONDO DE EMERGENCIA ============
 function calculateEmergencyFund() {
     const { totalIngresos } = calculateTotals();
-    // Calcular gastos mensuales promedio (últimos 3 meses)
     const gastosMensuales = {};
     finanzasData.egresos.forEach(g => {
         const mes = g.fecha.substring(0, 7);
@@ -434,9 +473,9 @@ function calculateEmergencyFund() {
         const total = ultimosMeses.reduce((sum, m) => sum + gastosMensuales[m], 0);
         gastoMensualPromedio = total / ultimosMeses.length;
     } else {
-        gastoMensualPromedio = totalIngresos * 0.7; // Estimación si no hay gastos
+        gastoMensualPromedio = totalIngresos * 0.7;
     }
-    const fondoRecomendado = gastoMensualPromedio * 6; // 6 meses
+    const fondoRecomendado = gastoMensualPromedio * 6;
     return { gastoMensualPromedio, fondoRecomendado };
 }
 
@@ -450,41 +489,33 @@ function updateEmergencyFund() {
     if (container) {
         container.innerHTML = `
             <div class="emergency-fund">
-                <p><strong>📊 Tu gasto mensual promedio:</strong> $${gastoMensualPromedio.toFixed(2)}</p>
+                <p><strong>📊 Gasto mensual promedio:</strong> $${gastoMensualPromedio.toFixed(2)}</p>
                 <p><strong>🛡️ Fondo recomendado (6 meses):</strong> $${fondoRecomendado.toFixed(2)}</p>
                 <p><strong>💰 Ahorro disponible:</strong> $${ahorroDisponible.toFixed(2)}</p>
                 <div style="background:#e0e0e0; border-radius:10px; height:20px; margin-top:10px; overflow:hidden;">
                     <div style="background:${porcentajeCompletado >= 100 ? '#4CAF50' : '#FF9800'}; height:100%; width:${porcentajeCompletado}%; transition: width 0.5s;"></div>
                 </div>
-                <p style="margin-top:5px;">${porcentajeCompletado >= 100 ? '✅ ¡Fondo de emergencia completo!' : `Progreso: ${porcentajeCompletado.toFixed(0)}% completado`}</p>
-                ${porcentajeCompletado < 100 ? `<p style="color:#e65100; font-weight:bold;">⚠️ Antes de invertir, completa tu fondo de emergencia de 6 meses.</p>` : '<p style="color:#2e7d32; font-weight:bold;">✅ ¡Excelente! Ya tienes tu fondo de emergencia. Ahora puedes invertir con mayor seguridad.</p>'}
+                <p style="margin-top:5px;">${porcentajeCompletado >= 100 ? '✅ ¡Fondo de emergencia completo!' : `Progreso: ${porcentajeCompletado.toFixed(0)}%`}</p>
+                ${porcentajeCompletado < 100 ? `<p style="color:#e65100; font-weight:bold;">⚠️ Completa tu fondo de emergencia antes de invertir.</p>` : '<p style="color:#2e7d32; font-weight:bold;">✅ ¡Excelente! Ahora puedes invertir con seguridad.</p>'}
             </div>
         `;
     }
     
-    // Consejo en la pestaña de consejos
     const adviceContainer = document.getElementById('emergencyAdvice');
     if (adviceContainer) {
         if (porcentajeCompletado < 100) {
             adviceContainer.innerHTML = `
                 <div style="background:#ffebee; padding:15px; border-radius:10px; border-left:4px solid #e74c3c;">
                     <h4>⚠️ Fondo de Emergencia Incompleto</h4>
-                    <p>Te falta <strong>$${(fondoRecomendado - ahorroDisponible).toFixed(2)}</strong> para completar tu fondo de 6 meses.</p>
-                    <p>💡 <strong>Recomendación:</strong> Prioriza completar este fondo <strong>antes</strong> de realizar inversiones de riesgo.</p>
-                    <p>📊 Destina el 20% de tus ingresos mensuales a completarlo.</p>
+                    <p>Te falta <strong>$${(fondoRecomendado - ahorroDisponible).toFixed(2)}</strong></p>
+                    <p>💡 <strong>Recomendación:</strong> Prioriza completar este fondo <strong>antes</strong> de invertir.</p>
                 </div>
             `;
         } else {
             adviceContainer.innerHTML = `
                 <div style="background:#e8f5e9; padding:15px; border-radius:10px; border-left:4px solid #4CAF50;">
                     <h4>✅ Fondo de Emergencia Completado</h4>
-                    <p>¡Excelente! Tienes ${porcentajeCompletado.toFixed(0)}% de tu fondo de emergencia.</p>
-                    <p>💡 Ahora puedes considerar invertir el excedente en instrumentos como:</p>
-                    <ul>
-                        <li>📈 CETES (bajo riesgo)</li>
-                        <li>🏦 Nu / FIBRAS (riesgo moderado)</li>
-                        <li>📊 GBM+ (mayor riesgo, mayor rendimiento)</li>
-                    </ul>
+                    <p>¡Excelente! Ahora puedes invertir el excedente.</p>
                 </div>
             `;
         }
@@ -508,9 +539,8 @@ document.getElementById('goalForm')?.addEventListener('submit', function(e) {
             <p>🎯 ${goalName}</p>
             <p>💰 Costo: $${goalCost.toFixed(2)}</p>
             <p>⏱️ Ahorrando $${monthlySavings.toFixed(2)} mensuales</p>
-            <p>📅 Tiempo necesario: ${yearsNeeded.toFixed(1)} años</p>
-            <p>🎉 ¡Cumplirás tu meta antes de lo planeado!</p>
-            <button onclick="saveGoal()" style="margin-top:10px;">💾 Guardar esta meta</button>
+            <p>📅 Tiempo: ${yearsNeeded.toFixed(1)} años</p>
+            <button onclick="saveGoal()" style="margin-top:10px;">💾 Guardar meta</button>
         `;
     } else {
         const neededMonthly = goalCost / (goalYears * 12);
@@ -519,9 +549,8 @@ document.getElementById('goalForm')?.addEventListener('submit', function(e) {
             <p>🎯 ${goalName}</p>
             <p>💰 Costo: $${goalCost.toFixed(2)}</p>
             <p>⏱️ Plazo: ${goalYears} años</p>
-            <p>💪 Necesitas ahorrar $${neededMonthly.toFixed(2)} mensuales</p>
-            <p>📊 Propuesta: Reduce gastos variables en $${(neededMonthly - monthlySavings).toFixed(2)} mensuales</p>
-            <button onclick="saveGoal()" style="margin-top:10px;">💾 Guardar esta meta</button>
+            <p>💪 Necesitas $${neededMonthly.toFixed(2)} mensuales</p>
+            <button onclick="saveGoal()" style="margin-top:10px;">💾 Guardar meta</button>
         `;
     }
     window.currentGoal = { goalName, goalCost, goalYears, monthlySavings };
@@ -566,7 +595,7 @@ window.deleteGoal = function(id) {
     }
 };
 
-// ============ ANÁLISIS DE HÁBITOS ============
+// ============ ANÁLISIS ============
 function updateHabitAnalysis() {
     const container = document.getElementById('habitAnalysis');
     if (!container) return;
@@ -574,21 +603,19 @@ function updateHabitAnalysis() {
         .filter(g => g.categoria === 'variable')
         .reduce((sum, g) => sum + g.monto, 0);
     const { totalIngresos } = calculateTotals();
-    const porcentajeGastosVariables = totalIngresos > 0 ? (gastosVariables / totalIngresos) * 100 : 0;
-    if (porcentajeGastosVariables > 30) {
+    const porcentaje = totalIngresos > 0 ? (gastosVariables / totalIngresos) * 100 : 0;
+    if (porcentaje > 30) {
         container.innerHTML = `
             <div style="background:#ffebee; padding:15px; border-radius:10px;">
-                <h4>⚠️ Gastos variables elevados (${porcentajeGastosVariables.toFixed(1)}%)</h4>
-                <p>Recomendación: Reduce en ${(porcentajeGastosVariables - 30).toFixed(1)}% tus gastos discrecionales.</p>
-                <p>💡 Podrías ahorrar $${(gastosVariables * 0.2).toFixed(2)} mensuales reduciendo gastos hormiga.</p>
+                <h4>⚠️ Gastos variables elevados (${porcentaje.toFixed(1)}%)</h4>
+                <p>💡 Reduce en ${(porcentaje - 30).toFixed(1)}% tus gastos discrecionales.</p>
             </div>
         `;
     } else {
         container.innerHTML = `
             <div style="background:#e8f5e9; padding:15px; border-radius:10px;">
-                <h4>✅ Excelente control de gastos variables</h4>
-                <p>Tus gastos variables representan solo el ${porcentajeGastosVariables.toFixed(1)}% de tus ingresos.</p>
-                <p>🎉 ¡Sigue así! Destina el excedente a inversión.</p>
+                <h4>✅ Excelente control (${porcentaje.toFixed(1)}%)</h4>
+                <p>🎉 Destina el excedente a inversión.</p>
             </div>
         `;
     }
@@ -596,7 +623,6 @@ function updateHabitAnalysis() {
 
 // ============ GRÁFICAS ============
 function generateCharts() {
-    // Gráfica de gastos
     const gastosPorCategoria = { fijo: 0, variable: 0, deduccion: 0, deuda: 0 };
     finanzasData.egresos.forEach(g => {
         if (gastosPorCategoria[g.categoria] !== undefined) gastosPorCategoria[g.categoria] += g.monto;
@@ -609,8 +635,8 @@ function generateCharts() {
             series: [{
                 name: 'Gastos',
                 data: [
-                    { name: 'Gastos Fijos', y: gastosPorCategoria.fijo, color: '#667eea' },
-                    { name: 'Gastos Variables', y: gastosPorCategoria.variable, color: '#764ba2' },
+                    { name: 'Fijos', y: gastosPorCategoria.fijo, color: '#667eea' },
+                    { name: 'Variables', y: gastosPorCategoria.variable, color: '#764ba2' },
                     { name: 'Deducciones', y: gastosPorCategoria.deduccion, color: '#f093fb' },
                     { name: 'Deudas', y: gastosPorCategoria.deuda, color: '#f5576c' }
                 ]
@@ -618,7 +644,6 @@ function generateCharts() {
         });
     }
     
-    // Gráfica de evolución mensual
     const gastosPorMes = {};
     const ingresosPorMes = {};
     finanzasData.egresos.forEach(g => {
@@ -643,22 +668,13 @@ function generateCharts() {
         });
     }
     
-    // Gráfica de inversiones
     const inversionesPorTipo = {};
     finanzasData.inversiones.forEach(inv => {
         inversionesPorTipo[inv.tipo] = (inversionesPorTipo[inv.tipo] || 0) + inv.montoInvertido;
     });
     const investContainer = document.getElementById('investmentsChart');
     if (investContainer && Object.keys(inversionesPorTipo).length > 0) {
-        const colores = {
-            nu: '#4CAF50',
-            gbm: '#2196F3',
-            cetes: '#FF9800',
-            didi: '#9C27B0',
-            fibras: '#F44336',
-            cripto: '#E91E63',
-            otro: '#607D8B'
-        };
+        const colores = { nu: '#4CAF50', gbm: '#2196F3', cetes: '#FF9800', didi: '#9C27B0', fibras: '#F44336', cripto: '#E91E63', otro: '#607D8B' };
         Highcharts.chart('investmentsChart', {
             chart: { type: 'pie' },
             title: { text: 'Distribución de Inversiones' },
@@ -695,15 +711,15 @@ function updateSummary() {
         summaryDiv.innerHTML = `
             <div class="grid-2">
                 <div style="background:#e8f5e9; padding:15px; border-radius:10px;">
-                    <h4>💰 Total Ingresos</h4>
+                    <h4>💰 Ingresos</h4>
                     <p style="font-size:24px; font-weight:bold; color:#2e7d32;">$${totalIngresos.toFixed(2)}</p>
                 </div>
                 <div style="background:#ffebee; padding:15px; border-radius:10px;">
-                    <h4>💸 Total Gastos</h4>
+                    <h4>💸 Gastos</h4>
                     <p style="font-size:24px; font-weight:bold; color:#c62828;">$${totalGastos.toFixed(2)}</p>
                 </div>
                 <div style="background:#e3f2fd; padding:15px; border-radius:10px;">
-                    <h4>📈 Ahorro Neto</h4>
+                    <h4>📈 Ahorro</h4>
                     <p style="font-size:24px; font-weight:bold; color:#1565c0;">$${ahorro.toFixed(2)}</p>
                 </div>
                 <div style="background:#fff3e0; padding:15px; border-radius:10px;">
@@ -715,14 +731,22 @@ function updateSummary() {
     }
 }
 
-// ============ INICIALIZAR ============
-loadData();
-
 // ============ SERVICE WORKER ============
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('ServiceWorker registrado:', reg))
-            .catch(err => console.log('Error al registrar ServiceWorker:', err));
+            .then(reg => {
+                console.log('✅ ServiceWorker registrado:', reg);
+                // Verificar actualizaciones
+                reg.addEventListener('updatefound', () => {
+                    console.log('🔄 Nueva versión disponible');
+                });
+            })
+            .catch(err => {
+                console.error('❌ Error al registrar ServiceWorker:', err);
+            });
     });
 }
+
+// ============ INICIALIZAR ============
+console.log('🚀 FinanzasPro cargado correctamente');

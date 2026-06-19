@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="FinanzasPro">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <title>FinanzasPro - Control Financiero EL BUENO</title>
+    <title>FinanzasPro - Control Financiero</title>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
@@ -305,49 +305,6 @@
                 </div>
                 
                 <!-- Campos de Renta Fija (Nu, CETES, Didi) - SIN required en HTML -->
-                <div id="fixedIncomeFields" class="conditional-field">
-                    <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Renta Fija</h4>
-                    <div class="form-group">
-                        <label>📈 Tasa de Interés Anual (%) <span class="required-star">*</span></label>
-                        <input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5">
-                    </div>
-                    <div class="form-group">
-                        <label>📅 Plazo (meses) <span class="required-star">*</span></label>
-                        <input type="number" id="investmentTerm" placeholder="Ej: 12">
-                    </div>
-                </div>
-
-                <!-- Campos de Renta Variable (GBM, FIBRAS, Cripto) - SIN required en HTML -->
-             <!-- INVERSIONES - VERSIÓN DEFINITIVA (SIN required en HTML) -->
-    <div id="inversiones" class="tab-content">
-        <div class="card">
-            <h3>➕ Registrar Inversión</h3>
-            <form id="investmentForm">
-                <div class="form-group">
-                    <label>📅 Fecha de Inversión <span class="required-star">*</span></label>
-                    <input type="date" id="investmentDate" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>🏦 Tipo de Inversión <span class="required-star">*</span></label>
-                    <select id="investmentType" required>
-                        <option value="">Selecciona un tipo...</option>
-                        <option value="nu">Nu (Cuenta de ahorro)</option>
-                        <option value="gbm">GBM+ (Acciones)</option>
-                        <option value="cetes">CETES</option>
-                        <option value="didi">Didi (Préstamos)</option>
-                        <option value="fibras">FIBRAS</option>
-                        <option value="cripto">Criptomonedas</option>
-                        <option value="otro">Otro</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>📝 Nombre/Descripción <span class="required-star">*</span></label>
-                    <input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required>
-                </div>
-                
-                <!-- Campos de Renta Fija (Nu, CETES, Didi) - SIN required -->
                 <div id="fixedIncomeFields" class="conditional-field">
                     <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Renta Fija</h4>
                     <div class="form-group">

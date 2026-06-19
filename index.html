@@ -167,8 +167,8 @@
             z-index: 9999;
         }
         .required-star { color: #e74c3c; font-weight: bold; margin-left: 2px; }
-        .error-message { color: #e74c3c; font-size: 12px; margin-top: 5px; display: none; }
-        .form-group.error input { border-color: #e74c3c; }
+        .field-required .required-star { display: inline; }
+        .field-optional .required-star { display: none; }
     </style>
 </head>
 <body>
@@ -277,12 +277,15 @@
         </div>
     </div>
 
-    <!-- INVERSIONES -->
+    <!-- INVERSIONES - VERSIÓN CORREGIDA -->
     <div id="inversiones" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Inversión</h3>
             <form id="investmentForm">
-                <div class="form-group"><label>📅 Fecha de Inversión <span class="required-star">*</span></label><input type="date" id="investmentDate" required></div>
+                <div class="form-group">
+                    <label>📅 Fecha de Inversión <span class="required-star">*</span></label>
+                    <input type="date" id="investmentDate" required>
+                </div>
                 
                 <div class="form-group">
                     <label>🏦 Tipo de Inversión <span class="required-star">*</span></label>
@@ -298,35 +301,73 @@
                     </select>
                 </div>
 
-                <div class="form-group"><label>📝 Nombre/Descripción <span class="required-star">*</span></label><input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required></div>
+                <div class="form-group">
+                    <label>📝 Nombre/Descripción <span class="required-star">*</span></label>
+                    <input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required>
+                </div>
                 
-                <!-- Campos de Renta Fija -->
+                <!-- Campos de Renta Fija (Nu, CETES, Didi) -->
                 <div id="fixedIncomeFields" class="conditional-field">
                     <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Renta Fija</h4>
-                    <div class="form-group"><label>📈 Tasa de Interés Anual (%) <span class="required-star">*</span></label><input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5"></div>
-                    <div class="form-group"><label>📅 Plazo (meses) <span class="required-star">*</span></label><input type="number" id="investmentTerm" placeholder="Ej: 12"></div>
+                    <div class="form-group">
+                        <label>📈 Tasa de Interés Anual (%) <span class="required-star">*</span></label>
+                        <input type="number" id="interestRate" step="0.01" placeholder="Ej: 14.5">
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Plazo (meses) <span class="required-star">*</span></label>
+                        <input type="number" id="investmentTerm" placeholder="Ej: 12">
+                    </div>
                 </div>
 
-                <!-- Campos de Renta Variable -->
+                <!-- Campos de Renta Variable (GBM, FIBRAS, Cripto) -->
                 <div id="stockFields" class="conditional-field">
                     <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Acciones</h4>
-                    <div class="form-group"><label>🏷️ Ticker de la Acción <span class="required-star">*</span></label><input type="text" id="stockTicker" placeholder="Ej: AAPL, AMZN"></div>
+                    <div class="form-group">
+                        <label>🏷️ Ticker de la Acción <span class="required-star">*</span></label>
+                        <input type="text" id="stockTicker" placeholder="Ej: AAPL, AMZN">
+                    </div>
                     <div class="form-group">
                         <label>📈 Tipo de Acción <span class="required-star">*</span></label>
-                        <select id="stockType"><option value="nacional">Nacional (BMV)</option><option value="internacional">Internacional (NYSE/NASDAQ)</option><option value="etf">ETF</option></select>
+                        <select id="stockType">
+                            <option value="nacional">Nacional (BMV)</option>
+                            <option value="internacional">Internacional (NYSE/NASDAQ)</option>
+                            <option value="etf">ETF</option>
+                        </select>
                     </div>
-                    <div class="form-group"><label>💵 Precio de Compra <span class="required-star">*</span></label><input type="number" id="buyPrice" step="0.01" placeholder="Ej: 150.50"></div>
-                    <div class="form-group"><label>📦 Número de Acciones <span class="required-star">*</span></label><input type="number" id="sharesCount" step="1" placeholder="Ej: 10"></div>
-                    <div class="form-group"><label>💰 Precio Actual (opcional)</label><input type="number" id="currentPrice" step="0.01" placeholder="Ej: 160.00"></div>
+                    <div class="form-group">
+                        <label>💵 Precio de Compra <span class="required-star">*</span></label>
+                        <input type="number" id="buyPrice" step="0.01" placeholder="Ej: 150.50">
+                    </div>
+                    <div class="form-group">
+                        <label>📦 Número de Acciones <span class="required-star">*</span></label>
+                        <input type="number" id="sharesCount" step="1" placeholder="Ej: 10">
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Precio Actual (opcional)</label>
+                        <input type="number" id="currentPrice" step="0.01" placeholder="Ej: 160.00">
+                    </div>
                     <div class="form-group">
                         <label>💵 Genera Dividendos</label>
-                        <select id="generatesDividends"><option value="no">No</option><option value="si">Sí</option></select>
+                        <select id="generatesDividends">
+                            <option value="no">No</option>
+                            <option value="si">Sí</option>
+                        </select>
                     </div>
-                    <div class="form-group"><label>📈 Rendimiento por Dividendo (%)</label><input type="number" id="dividendYield" step="0.01" placeholder="Ej: 3.5"></div>
+                    <div class="form-group">
+                        <label>📈 Rendimiento por Dividendo (%)</label>
+                        <input type="number" id="dividendYield" step="0.01" placeholder="Ej: 3.5">
+                    </div>
                 </div>
 
-                <div class="form-group"><label>💰 Monto Invertido ($) <span class="required-star">*</span></label><input type="number" id="investedAmount" step="0.01" required></div>
-                <div class="form-group"><label>📝 Notas adicionales</label><textarea id="investmentNotes" rows="2" placeholder="Comentarios sobre esta inversión..."></textarea></div>
+                <div class="form-group">
+                    <label>💰 Monto Invertido ($) <span class="required-star">*</span></label>
+                    <input type="number" id="investedAmount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>📝 Notas adicionales</label>
+                    <textarea id="investmentNotes" rows="2" placeholder="Comentarios sobre esta inversión..."></textarea>
+                </div>
                 
                 <div id="formErrors" style="color:#e74c3c; margin-top:10px; display:none; padding:10px; background:#ffebee; border-radius:8px;"></div>
                 

@@ -132,7 +132,7 @@ window.showTab = function(tabName) {
     updateAllDisplays();
 };
 
-// ============ CAMPOS CONDICIONALES ============
+// ============ CAMPOS CONDICIONALES (CORREGIDO) ============
 function setupConditionalFields() {
     const investmentType = document.getElementById('investmentType');
     if (investmentType) {
@@ -145,35 +145,45 @@ function setupConditionalFields() {
             if (fixedIncomeFields) fixedIncomeFields.classList.remove('show');
             if (stockFields) stockFields.classList.remove('show');
             
-            // Mostrar según tipo
+            // Remover required de TODOS los campos condicionales primero
+            removeRequiredFromConditionalFields();
+            
+            // Mostrar según tipo y agregar required solo a los visibles
             if (type === 'nu' || type === 'cetes' || type === 'didi') {
-                if (fixedIncomeFields) fixedIncomeFields.classList.add('show');
-                // Quitar required de campos de acciones
-                document.getElementById('buyPrice').removeAttribute('required');
-                document.getElementById('sharesCount').removeAttribute('required');
-                document.getElementById('stockTicker').removeAttribute('required');
-                // Agregar required a campos de renta fija
-                document.getElementById('interestRate').setAttribute('required', 'required');
-                document.getElementById('investmentTerm').setAttribute('required', 'required');
+                if (fixedIncomeFields) {
+                    fixedIncomeFields.classList.add('show');
+                    // Agregar required a campos de renta fija
+                    document.getElementById('interestRate').setAttribute('required', 'required');
+                    document.getElementById('investmentTerm').setAttribute('required', 'required');
+                }
             } else if (type === 'gbm' || type === 'fibras' || type === 'cripto') {
-                if (stockFields) stockFields.classList.add('show');
-                // Quitar required de campos de renta fija
-                document.getElementById('interestRate').removeAttribute('required');
-                document.getElementById('investmentTerm').removeAttribute('required');
-                // Agregar required a campos de acciones
-                document.getElementById('buyPrice').setAttribute('required', 'required');
-                document.getElementById('sharesCount').setAttribute('required', 'required');
-                document.getElementById('stockTicker').setAttribute('required', 'required');
-            } else {
-                // Ninguno seleccionado - quitar todos los required
-                document.getElementById('buyPrice').removeAttribute('required');
-                document.getElementById('sharesCount').removeAttribute('required');
-                document.getElementById('stockTicker').removeAttribute('required');
-                document.getElementById('interestRate').removeAttribute('required');
-                document.getElementById('investmentTerm').removeAttribute('required');
+                if (stockFields) {
+                    stockFields.classList.add('show');
+                    // Agregar required a campos de acciones
+                    document.getElementById('stockTicker').setAttribute('required', 'required');
+                    document.getElementById('buyPrice').setAttribute('required', 'required');
+                    document.getElementById('sharesCount').setAttribute('required', 'required');
+                }
             }
+            // Si es "otro" o vacío, no se agrega ningún required adicional
         });
     }
+}
+
+function removeRequiredFromConditionalFields() {
+    // Remover required de campos de renta fija
+    const interestRate = document.getElementById('interestRate');
+    const investmentTerm = document.getElementById('investmentTerm');
+    if (interestRate) interestRate.removeAttribute('required');
+    if (investmentTerm) investmentTerm.removeAttribute('required');
+    
+    // Remover required de campos de acciones
+    const stockTicker = document.getElementById('stockTicker');
+    const buyPrice = document.getElementById('buyPrice');
+    const sharesCount = document.getElementById('sharesCount');
+    if (stockTicker) stockTicker.removeAttribute('required');
+    if (buyPrice) buyPrice.removeAttribute('required');
+    if (sharesCount) sharesCount.removeAttribute('required');
 }
 
 // ============ INGRESOS ============
@@ -337,7 +347,7 @@ function checkBudgetRules() {
     }
 }
 
-// ============ INVERSIONES (CORREGIDO) ============
+// ============ INVERSIONES (CORREGIDO - VALIDACIÓN COMPLETA) ============
 document.getElementById('investmentForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -466,6 +476,9 @@ document.getElementById('investmentForm')?.addEventListener('submit', function(e
     // Ocultar campos condicionales
     document.getElementById('fixedIncomeFields').classList.remove('show');
     document.getElementById('stockFields').classList.remove('show');
+    
+    // Remover required de todos los campos condicionales
+    removeRequiredFromConditionalFields();
     
     alert('✅ Inversión registrada correctamente');
 });

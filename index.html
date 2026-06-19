@@ -167,8 +167,6 @@
             z-index: 9999;
         }
         .required-star { color: #e74c3c; font-weight: bold; margin-left: 2px; }
-        .field-required .required-star { display: inline; }
-        .field-optional .required-star { display: none; }
     </style>
 </head>
 <body>
@@ -277,7 +275,7 @@
         </div>
     </div>
 
-    <!-- INVERSIONES - VERSIÓN CORREGIDA -->
+    <!-- INVERSIONES - VERSIÓN CORREGIDA (SIN required en campos ocultos) -->
     <div id="inversiones" class="tab-content">
         <div class="card">
             <h3>➕ Registrar Inversión</h3>
@@ -306,7 +304,7 @@
                     <input type="text" id="investmentName" placeholder="Ej: Nu - Ahorro, GBM - Apple" required>
                 </div>
                 
-                <!-- Campos de Renta Fija (Nu, CETES, Didi) -->
+                <!-- Campos de Renta Fija (Nu, CETES, Didi) - SIN required en HTML -->
                 <div id="fixedIncomeFields" class="conditional-field">
                     <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Renta Fija</h4>
                     <div class="form-group">
@@ -319,7 +317,7 @@
                     </div>
                 </div>
 
-                <!-- Campos de Renta Variable (GBM, FIBRAS, Cripto) -->
+                <!-- Campos de Renta Variable (GBM, FIBRAS, Cripto) - SIN required en HTML -->
                 <div id="stockFields" class="conditional-field">
                     <h4 style="color:#667eea; margin-bottom:10px;">📊 Datos de Acciones</h4>
                     <div class="form-group">
